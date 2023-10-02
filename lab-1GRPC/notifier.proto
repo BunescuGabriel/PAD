@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package GrpcAgent;
+
+service Notifier {
+  rpc Notify (NotifyRequest) returns (NotifyReply);
+}
+
+message NotifyRequest {
+  string content = 1;
+}
+
+message NotifyReply {
+  bool isSuccess = 1;
+}

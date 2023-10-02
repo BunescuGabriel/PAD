@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package GrpcAgent;
+
+service Subscriber {
+  rpc Subscribe (SubscriberRequest) returns (SubscriberReply);
+}
+
+message SubscriberRequest {
+  string topic = 1;
+  string address = 2;
+}
+
+message SubscriberReply {
+  bool isSuccess = 1;
+}
