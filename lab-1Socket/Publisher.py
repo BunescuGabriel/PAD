@@ -15,7 +15,7 @@ class Publisher:
                 while True:
                     topic = input("Enter the topic: ").lower()
                     content = input("Enter content: ")
-                    message = f"PUBLISH {topic} {content}"
+                    message = f"PUBLISH {topic}\n{content}\n"  # Adăugați \n pentru a separa titlul și conținutul și pentru a indica sfârșitul mesajului
 
                     client_socket.send(message.encode('utf-8'))
 

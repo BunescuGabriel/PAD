@@ -49,6 +49,8 @@ class BrokerServer:
             # Send stored messages to the new subscriber if there are any
             self.send_stored_messages(client_socket, topic)
         elif command == 'PUBLISH':
+            if len(parts) < 3:
+                return 
             topic = parts[1]
             content = ' '.join(parts[2:])
             self.publish(client_socket, topic, content)
@@ -75,7 +77,6 @@ class BrokerServer:
             if topic not in self.topics:
                 self.topics[topic] = []
             self.topics[topic].append(content)
-        
 
     def send_stored_messages(self, subscriber_socket, topic):
         if topic in self.topics:

@@ -85,11 +85,13 @@ class SubscriberService(subscriber_pb2_grpc.SubscriberServicer):
             # Trimit mesajele stocate pentru acest topic către noul abonat
             message_storage = MessageStorage()
             messages = message_storage.get_messages_by_topic(request.topic)
-            for message in messages:
+            connections = self.connection_storage.get_connections_by_topic(request.topic)
+            for connection in connections:
                 try:
                     stub = notifier_pb2_grpc.NotifierStub(connection.channel)
-                    response = stub.Notify(notifier_pb2.NotifyRequest(content=message.content))
-                    print(f"Notified new subscriber {connection.address} with {message.content}. Response: {response.isSuccess}")
+                    for message in messages:
+                        response = stub.Notify(notifier_pb2.NotifyRequest(content=message.content))
+                        print(f"Notified new subscriber {connection.address} with {message.content}. Response: {response.isSuccess}")
                 except grpc.RpcError as e:
                     if e.code() == grpc.StatusCode.UNAVAILABLE:
                         # Clientul nu este disponibil, eliminăm-l din lista de conexiuni
@@ -104,6 +106,7 @@ class SubscriberService(subscriber_pb2_grpc.SubscriberServicer):
             print(f"Could not add the new connection {request.address} {request.topic}. {str(e)}")
         return subscriber_pb2.SubscriberReply(isSuccess=True)
 
+
 class SenderWorker:
     def __init__(self, message_storage, connection_storage):
         self.message_storage = message_storage
@@ -112,7 +115,7 @@ class SenderWorker:
     def start(self):
         while True:
             while not self.message_storage.is_empty():
-                for topic, messages in self.message_storage.messages.items():
+                for topic, messages in list(self.message_storage.messages.items()):
                     connections = self.connection_storage.get_connections_by_topic(topic)
                     
                     for connection in connections:
@@ -133,6 +136,7 @@ class SenderWorker:
                                 print(f"RPC Error notifying subscriber {connection.address}. {e.details()}")
                         except Exception as e:
                             print(f"Error notifying subscriber {connection.address}. {str(e)}")
+
 
 if __name__ == '__main__':
     connection_storage = ConnectionStorage()
