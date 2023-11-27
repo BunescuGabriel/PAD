@@ -24,8 +24,7 @@ class Subscriber:
                         break
 
                     message = data.decode('utf-8')
-                    print(message)
-                    # print(f"Message receive: {message}")  # Afișați fiecare mesaj pe o linie nouă
+                    print(f"Message received: {message}")
 
             except ConnectionRefusedError:
                 print("Broker is not available. Retrying in 5 seconds...")

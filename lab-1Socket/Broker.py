@@ -77,6 +77,7 @@ class BrokerServer:
             if topic not in self.topics:
                 self.topics[topic] = []
             self.topics[topic].append(content)
+    
 
     def send_stored_messages(self, subscriber_socket, topic):
         if topic in self.topics:
